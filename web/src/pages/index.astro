@@ -1,0 +1,22 @@
+---
+import {sanityClient} from '../lib/sanity'
+import {pageQuery} from '../lib/queries'
+
+// Ovaj kod se izvršava U BUILD-U, na tvom računaru.
+// Nikad u browseru posetioca.
+const page = await sanityClient.fetch(pageQuery, {
+  slug: 'home',
+  lang: 'sr',
+})
+---
+
+<html lang="sr">
+  <head>
+    <meta charset="utf-8" />
+    <title>Debug</title>
+  </head>
+  <body>
+    <h1>Podaci iz Sanity-ja</h1>
+    <pre>{JSON.stringify(page, null, 2)}</pre>
+  </body>
+</html>
