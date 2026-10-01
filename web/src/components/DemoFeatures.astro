@@ -1,0 +1,19 @@
+---
+import type {FeaturesSection} from '../lib/types'
+const {data} = Astro.props as {data: FeaturesSection}
+---
+
+<section class="demo-features" aria-labelledby={`features-${data._key}`}>
+  {data.heading && (
+    <h2 class="demo-features__heading" id={`features-${data._key}`}>{data.heading}</h2>
+  )}
+
+  <ul class="demo-features__list" role="list">
+    {data.items?.map((item) => (
+      <li class="demo-features__item">
+        <h3 class="demo-features__title">{item.title}</h3>
+        {item.text && <p class="demo-features__text">{item.text}</p>}
+      </li>
+    ))}
+  </ul>
+</section>

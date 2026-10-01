@@ -1,0 +1,24 @@
+---
+import type {Section} from '../lib/types'
+import DemoHero from './DemoHero.astro'
+import DemoFeatures from './DemoFeatures.astro'
+import DemoFaq from './DemoFaq.astro'
+import DemoCta from './DemoCta.astro'
+
+const {sections = []} = Astro.props as {sections: Section[]}
+
+const components = {
+  hero: DemoHero,
+  features: DemoFeatures,
+  faq: DemoFaq,
+  cta: DemoCta,
+}
+---
+
+{sections.map((section) => {
+  const Component = components[section._type]
+  // Ako urednik doda tip sekcije za koji još nema komponente,
+  // preskačemo ga umesto da rušimo ceo build.
+  if (!Component) return null
+  return <Component data={section} />
+})}

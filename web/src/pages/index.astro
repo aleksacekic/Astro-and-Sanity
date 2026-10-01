@@ -1,22 +1,37 @@
 ---
 import {sanityClient} from '../lib/sanity'
 import {pageQuery} from '../lib/queries'
+import type {PageData} from '../lib/types'
+import DemoSectionRenderer from '../components/DemoSectionRenderer.astro'
 
-// Ovaj kod se izvršava U BUILD-U, na tvom računaru.
-// Nikad u browseru posetioca.
-const page = await sanityClient.fetch(pageQuery, {
-  slug: 'home',
-  lang: 'sr',
-})
+const lang = 'sr'
+const page: PageData = await sanityClient.fetch(pageQuery, {slug: 'home', lang})
 ---
 
-<html lang="sr">
+<!doctype html>
+<html lang={lang}>
   <head>
     <meta charset="utf-8" />
-    <title>Debug</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Fokusiraj</title>
+    {page?.metaDescription && (
+      <meta name="description" content={page.metaDescription} />
+    )}
   </head>
   <body>
-    <h1>Podaci iz Sanity-ja</h1>
-    <pre>{JSON.stringify(page, null, 2)}</pre>
+    <header class="demo-header">
+      <a class="demo-skip-link" href="#main">Preskoči na sadržaj</a>
+      <nav class="demo-nav" aria-label="Glavna navigacija">
+        <a class="demo-nav__logo" href="/">Fokusiraj</a>
+      </nav>
+    </header>
+
+    <main id="main">
+      <DemoSectionRenderer sections={page?.sections ?? []} />
+    </main>
+
+    <footer class="demo-footer">
+      <p>&copy; {new Date().getFullYear()} Fokusiraj. Demo projekat.</p>
+    </footer>
   </body>
 </html>

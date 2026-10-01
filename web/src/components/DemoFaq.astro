@@ -1,0 +1,19 @@
+---
+import type {FaqSection} from '../lib/types'
+const {data} = Astro.props as {data: FaqSection}
+---
+
+<section class="demo-faq" aria-labelledby={`faq-${data._key}`}>
+  {data.heading && (
+    <h2 class="demo-faq__heading" id={`faq-${data._key}`}>{data.heading}</h2>
+  )}
+
+  <div class="demo-faq__list">
+    {data.questions?.map((qa) => (
+      <details class="demo-faq__item" name={`faq-${data._key}`}>
+        <summary class="demo-faq__question">{qa.question}</summary>
+        <div class="demo-faq__answer"><p>{qa.answer}</p></div>
+      </details>
+    ))}
+  </div>
+</section>

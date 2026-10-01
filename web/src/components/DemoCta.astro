@@ -1,0 +1,12 @@
+---
+import type {CtaSection} from '../lib/types'
+const {data} = Astro.props as {data: CtaSection}
+---
+
+<section class="demo-cta" aria-labelledby={`cta-${data._key}`}>
+  <h2 class="demo-cta__heading" id={`cta-${data._key}`}>{data.heading}</h2>
+  {data.text && <p class="demo-cta__text">{data.text}</p>}
+  <a class="demo-button demo-button--primary" href={data.buttonHref}>
+    {data.buttonLabel}
+  </a>
+</section>
