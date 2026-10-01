@@ -17,3 +17,41 @@ const {data} = Astro.props as {data: FeaturesSection}
     ))}
   </ul>
 </section>
+
+<style>
+  .demo-features {
+    width: 100%;
+    max-width: var(--demo-container);
+    margin-inline: auto;
+    padding-inline: var(--demo-space-4);
+    padding-block: var(--demo-space-16);
+    background: var(--demo-color-surface);
+  }
+
+  .demo-features__heading {
+    font-size: var(--demo-text-xl);
+    margin-bottom: var(--demo-space-8);
+  }
+
+  .demo-features__list {
+    display: grid;
+    gap: var(--demo-space-6);
+    grid-template-columns: repeat(auto-fit, minmax(16rem, 1fr));
+  }
+
+  .demo-features__item {
+    background: var(--demo-color-bg);
+    border: 1px solid var(--demo-color-border);
+    border-radius: var(--demo-radius);
+    padding: var(--demo-space-6);
+  }
+
+  .demo-features__title {
+    font-size: var(--demo-text-lg);
+    margin-bottom: var(--demo-space-2);
+  }
+
+  .demo-features__text {
+    color: var(--demo-color-text-muted);
+  }
+</style>

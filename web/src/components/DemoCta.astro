@@ -10,3 +10,33 @@ const {data} = Astro.props as {data: CtaSection}
     {data.buttonLabel}
   </a>
 </section>
+
+<style>
+  .demo-cta {
+    text-align: center;
+    padding-block: var(--demo-space-16);
+    padding-inline: var(--demo-space-4);
+    background: var(--demo-color-accent);
+    color: var(--demo-color-accent-contrast);
+  }
+
+  .demo-cta__heading {
+    font-size: var(--demo-text-xl);
+    margin-bottom: var(--demo-space-4);
+  }
+
+  .demo-cta__text {
+    max-width: var(--demo-measure);
+    margin-inline: auto;
+    margin-bottom: var(--demo-space-8);
+  }
+
+  /* Na tamnoj podlozi invertujemo dugme */
+  .demo-cta .demo-button {
+    background: var(--demo-color-accent-contrast);
+    color: var(--demo-color-accent);
+  }
+  .demo-cta .demo-button:hover {
+    background: var(--demo-color-surface);
+  }
+</style>

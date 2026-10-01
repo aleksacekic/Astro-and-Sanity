@@ -1,0 +1,90 @@
+@import "./tokens.css";
+
+/* ===== Reset ===== */
+*, *::before, *::after { box-sizing: border-box; }
+
+body, h1, h2, h3, p, ul, figure { margin: 0; }
+
+ul[role="list"] { list-style: none; padding: 0; }
+
+img { max-width: 100%; height: auto; display: block; }
+
+/* ===== Osnove ===== */
+html { scroll-behavior: smooth; }
+
+body {
+  font-family: var(--demo-font-sans);
+  font-size: var(--demo-text-base);
+  line-height: var(--demo-leading-normal);
+  color: var(--demo-color-text);
+  background: var(--demo-color-bg);
+  -webkit-font-smoothing: antialiased;
+}
+
+h1, h2, h3 {
+  line-height: var(--demo-leading-tight);
+  text-wrap: balance;      /* sprečava usamljenu reč u poslednjem redu */
+}
+
+p { text-wrap: pretty; }
+
+/* ===== Fokus ===== */
+:focus-visible {
+  outline: 3px solid var(--demo-color-focus);
+  outline-offset: 2px;
+  border-radius: 2px;
+}
+
+/* ===== Poštovanje korisnikovih podešavanja ===== */
+@media (prefers-reduced-motion: reduce) {
+  html { scroll-behavior: auto; }
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}
+
+/* ===== Skip link ===== */
+.demo-skip-link {
+  position: absolute;
+  left: var(--demo-space-4);
+  top: var(--demo-space-4);
+  z-index: 100;
+  padding: var(--demo-space-3) var(--demo-space-4);
+  background: var(--demo-color-accent);
+  color: var(--demo-color-accent-contrast);
+  border-radius: var(--demo-radius);
+  transform: translateY(-200%);
+  transition: transform var(--demo-transition);
+}
+.demo-skip-link:focus { transform: translateY(0); }
+
+/* ===== Dugmad ===== */
+.demo-button {
+  display: inline-block;
+  padding: var(--demo-space-3) var(--demo-space-6);
+  border-radius: var(--demo-radius);
+  font-weight: 600;
+  text-decoration: none;
+  background: var(--demo-color-accent);
+  color: var(--demo-color-accent-contrast);
+  transition: background var(--demo-transition);
+  min-height: 44px;          /* minimalna veličina mete za dodir */
+  line-height: 1.5;
+}
+.demo-button:hover { background: var(--demo-color-accent-hover); }
+
+/* ===== Layout pomoćnici ===== */
+.demo-container {
+  width: 100%;
+  max-width: var(--demo-container);
+  margin-inline: auto;
+  padding-inline: var(--demo-space-4);
+}
+
+.demo-section { padding-block: var(--demo-space-16); }
+
+@media (min-width: 48em) {
+  .demo-section { padding-block: var(--demo-space-24); }
+}

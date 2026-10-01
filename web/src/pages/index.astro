@@ -3,6 +3,7 @@ import {sanityClient} from '../lib/sanity'
 import {pageQuery} from '../lib/queries'
 import type {PageData} from '../lib/types'
 import DemoSectionRenderer from '../components/DemoSectionRenderer.astro'
+import '../styles/global.css'
 
 const lang = 'sr'
 const page: PageData = await sanityClient.fetch(pageQuery, {slug: 'home', lang})
@@ -21,7 +22,7 @@ const page: PageData = await sanityClient.fetch(pageQuery, {slug: 'home', lang})
   <body>
     <header class="demo-header">
       <a class="demo-skip-link" href="#main">Preskoči na sadržaj</a>
-      <nav class="demo-nav" aria-label="Glavna navigacija">
+      <nav class="demo-nav demo-container" aria-label="Glavna navigacija">
         <a class="demo-nav__logo" href="/">Fokusiraj</a>
       </nav>
     </header>
