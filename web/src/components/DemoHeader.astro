@@ -1,0 +1,80 @@
+---
+import {languages, type Lang} from '../i18n/ui'
+import {getLocalizedPath, useTranslations} from '../i18n/utils'
+
+const {lang} = Astro.props as {lang: Lang}
+const t = useTranslations(lang)
+const languageEntries = Object.entries(languages) as [Lang, string][]
+---
+
+<header class="demo-header">
+  <a class="demo-skip-link" href="#main">{t('skipLink')}</a>
+  <nav class="demo-nav demo-container" aria-label={t('nav.label')}>
+    <a class="demo-nav__logo" href={`/${lang}/`}>Fokusiraj</a>
+
+    <ul class="demo-lang-switcher" role="list">
+      {languageEntries.map(([code, name]) => (
+        <li>
+          {/*
+            hreflang: jezik stranice NA KOJU link vodi (za browser i pretraživače).
+            lang: jezik TEKSTA linka, da čitač ekrana "English" izgovori
+            engleski, a ne srpskim glasom.
+            aria-current="page": trenutni jezik je bukvalno trenutna stranica.
+          */}
+          <a
+            class="demo-lang-switcher__link"
+            href={getLocalizedPath(Astro.url.pathname, code)}
+            hreflang={code}
+            lang={code}
+            aria-current={code === lang ? 'page' : undefined}
+          >
+            {name}
+          </a>
+        </li>
+      ))}
+    </ul>
+  </nav>
+</header>
+
+<style>
+  .demo-header {
+    border-bottom: 1px solid var(--demo-color-border);
+  }
+
+  .demo-nav {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--demo-space-4);
+    min-height: 4rem;
+  }
+
+  .demo-nav__logo {
+    font-size: var(--demo-text-lg);
+    font-weight: 700;
+    color: var(--demo-color-text);
+    text-decoration: none;
+  }
+
+  .demo-lang-switcher {
+    display: flex;
+    gap: var(--demo-space-1);
+  }
+
+  .demo-lang-switcher__link {
+    display: inline-flex;
+    align-items: center;
+    min-height: 44px;          /* minimalna veličina mete za dodir */
+    padding-inline: var(--demo-space-3);
+    border-radius: var(--demo-radius);
+    color: var(--demo-color-accent);
+  }
+
+  /* Stil se kači na isti atribut koji čita čitač ekrana, pa vizuelno
+     i semantičko "trenutno" ne mogu da se razilaze. */
+  .demo-lang-switcher__link[aria-current="page"] {
+    color: var(--demo-color-text);
+    font-weight: 600;
+    text-decoration: none;
+  }
+</style>

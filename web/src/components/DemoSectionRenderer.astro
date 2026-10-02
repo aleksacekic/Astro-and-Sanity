@@ -1,11 +1,12 @@
 ---
 import type {Section} from '../lib/types'
+import type {Lang} from '../i18n/ui'
 import DemoHero from './DemoHero.astro'
 import DemoFeatures from './DemoFeatures.astro'
 import DemoFaq from './DemoFaq.astro'
 import DemoCta from './DemoCta.astro'
 
-const {sections = []} = Astro.props as {sections: Section[]}
+const {sections = [], lang} = Astro.props as {sections: Section[]; lang: Lang}
 
 const components = {
   hero: DemoHero,
@@ -20,5 +21,6 @@ const components = {
   // Ako urednik doda tip sekcije za koji još nema komponente,
   // preskačemo ga umesto da rušimo ceo build.
   if (!Component) return null
-  return <Component data={section} />
+  // lang dobijaju sve; komponente kojima ne treba ga ignorišu.
+  return <Component data={section} lang={lang} />
 })}

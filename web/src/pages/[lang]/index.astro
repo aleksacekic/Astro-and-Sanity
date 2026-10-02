@@ -1,0 +1,50 @@
+---
+import {sanityClient} from '../../lib/sanity'
+import {pageQuery} from '../../lib/queries'
+import type {PageData} from '../../lib/types'
+import {languages, type Lang} from '../../i18n/ui'
+import {useTranslations} from '../../i18n/utils'
+import DemoHeader from '../../components/DemoHeader.astro'
+import DemoSectionRenderer from '../../components/DemoSectionRenderer.astro'
+import '../../styles/global.css'
+
+// Pri build-u Astro poziva ovu funkciju jednom, pre renderovanja.
+// Svaki vraćeni objekat postaje jedna HTML stranica:
+//   {params: {lang: 'sr'}} -> dist/sr/index.html
+//   {params: {lang: 'en'}} -> dist/en/index.html
+// Ime parametra mora da se poklapa sa imenom foldera [lang].
+// Za jezik koji nije na spisku stranica se ne generiše (404).
+export function getStaticPaths() {
+  return Object.keys(languages).map((lang) => ({params: {lang}}))
+}
+
+// Ispod se izvršava jednom PO STRANICI, sa params iz getStaticPaths.
+const lang = Astro.params.lang as Lang
+const t = useTranslations(lang)
+
+// Isti upit za sve jezike; menja se samo $lang.
+const page: PageData = await sanityClient.fetch(pageQuery, {slug: 'home', lang})
+---
+
+<!doctype html>
+<html lang={lang}>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Fokusiraj</title>
+    {page?.metaDescription && (
+      <meta name="description" content={page.metaDescription} />
+    )}
+  </head>
+  <body>
+    <DemoHeader lang={lang} />
+
+    <main id="main">
+      <DemoSectionRenderer sections={page?.sections ?? []} lang={lang} />
+    </main>
+
+    <footer class="demo-footer">
+      <p>&copy; {new Date().getFullYear()} Fokusiraj. {t('footer.note')}</p>
+    </footer>
+  </body>
+</html>

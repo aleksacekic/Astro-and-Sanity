@@ -39,4 +39,11 @@ const {data} = Astro.props as {data: CtaSection}
   .demo-cta .demo-button:hover {
     background: var(--demo-color-surface);
   }
+
+  /* Plavi fokus (--demo-color-focus) na zelenoj podlozi ima kontrast ~1.5:1,
+     a WCAG 1.4.11 traži bar 3:1. Ovde je bela (~7.5:1). Menjamo samo boju,
+     debljina i offset ostaju iz global.css. */
+  .demo-cta :focus-visible {
+    outline-color: var(--demo-color-accent-contrast);
+  }
 </style>

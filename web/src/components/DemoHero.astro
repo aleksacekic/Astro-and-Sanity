@@ -3,9 +3,9 @@ import type {HeroSection} from '../lib/types'
 const {data} = Astro.props as {data: HeroSection}
 ---
 
-<section class="demo-hero">
+<section class="demo-hero" aria-labelledby={`hero-${data._key}`}>
   <div class="demo-hero__content">
-    <h1 class="demo-hero__heading">{data.heading}</h1>
+    <h1 class="demo-hero__heading" id={`hero-${data._key}`}>{data.heading}</h1>
     {data.subheading && <p class="demo-hero__subheading">{data.subheading}</p>}
     {data.ctaLabel && data.ctaHref && (
       <a class="demo-button" href={data.ctaHref}>{data.ctaLabel}</a>

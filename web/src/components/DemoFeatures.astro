@@ -1,11 +1,21 @@
 ---
 import type {FeaturesSection} from '../lib/types'
-const {data} = Astro.props as {data: FeaturesSection}
+import type {Lang} from '../i18n/ui'
+import {useTranslations} from '../i18n/utils'
+
+const {data, lang} = Astro.props as {data: FeaturesSection; lang: Lang}
+const t = useTranslations(lang)
+const headingId = `features-${data._key}`
+// Bez h2 bi stavke (h3) visile direktno ispod h1, a aria-labelledby bi
+// pokazivao u prazno. Zato naslov uvek postoji; ako ga urednik nije uneo,
+// vidljiv je samo čitačima ekrana.
 ---
 
-<section class="demo-features" aria-labelledby={`features-${data._key}`}>
-  {data.heading && (
-    <h2 class="demo-features__heading" id={`features-${data._key}`}>{data.heading}</h2>
+<section class="demo-features" aria-labelledby={headingId}>
+  {data.heading ? (
+    <h2 class="demo-features__heading" id={headingId}>{data.heading}</h2>
+  ) : (
+    <h2 class="demo-visually-hidden" id={headingId}>{t('features.fallbackHeading')}</h2>
   )}
 
   <ul class="demo-features__list" role="list">

@@ -1,22 +1,114 @@
 ---
 import type {FaqSection} from '../lib/types'
-const {data} = Astro.props as {data: FaqSection}
+import type {Lang} from '../i18n/ui'
+import {useTranslations} from '../i18n/utils'
+
+const {data, lang} = Astro.props as {data: FaqSection; lang: Lang}
+const t = useTranslations(lang)
+
+const headingId = `faq-${data._key}`
+// FAQ bez pitanja nema šta da prikaže; bez ove provere ostaje prazna
+// <section> čiji aria-labelledby pokazuje na id koji ne postoji.
+const hasQuestions = (data.questions?.length ?? 0) > 0
+// Ako urednik nije uneo naslov (ili njegov prevod), sekcija i dalje mora
+// da ima ime i h2 ispod h1, pa naslov postoji, ali samo za čitače ekrana.
 ---
 
-<section class="demo-faq" aria-labelledby={`faq-${data._key}`}>
-  {data.heading && (
-    <h2 class="demo-faq__heading" id={`faq-${data._key}`}>{data.heading}</h2>
-  )}
+{hasQuestions && (
+  <section
+    class="demo-faq"
+    aria-labelledby={headingId}
+    data-label-open={t('faq.openAll')}
+    data-label-close={t('faq.closeAll')}
+  >
+    {data.heading ? (
+      <h2 class="demo-faq__heading" id={headingId}>{data.heading}</h2>
+    ) : (
+      <h2 class="demo-visually-hidden" id={headingId}>{t('faq.fallbackHeading')}</h2>
+    )}
 
-  <div class="demo-faq__list">
-    {data.questions?.map((qa) => (
-      <details class="demo-faq__item" name={`faq-${data._key}`}>
-        <summary class="demo-faq__question">{qa.question}</summary>
-        <div class="demo-faq__answer"><p>{qa.answer}</p></div>
-      </details>
-    ))}
-  </div>
-</section>
+    <div class="demo-faq__list">
+      {data.questions?.map((qa) => (
+        <details class="demo-faq__item" name={headingId}>
+          <summary class="demo-faq__question">{qa.question}</summary>
+          <div class="demo-faq__answer"><p>{qa.answer}</p></div>
+        </details>
+      ))}
+    </div>
+  </section>
+)}
+
+<script>
+  // Progressive enhancement: accordion radi i bez ovoga (<details name>),
+  // skripta samo dodaje "Otvori sve / Zatvori sve".
+  //
+  // Zašto se dugme pravi ovde, a ne piše u HTML-u: dugme koje ništa ne radi
+  // je gore od dugmeta koga nema. Da je u HTML-u, bez JS-a (blokiran, pao
+  // na mreži, greška u drugoj skripti) korisnik bi video kontrolu koja je
+  // fokusabilna, čitač ekrana bi je najavio kao dugme, a klik ne bi imao
+  // efekta. Ovako dugme postoji samo ako postoji i kod koji ga pokreće.
+  //
+  // Astro ovaj <script> bundle-uje kao modul i ubacuje ga jednom po stranici,
+  // bez obzira na broj FAQ sekcija, pa skripta sama pronalazi sve sekcije.
+  // Modul se izvršava tek kad je HTML parsiran, pa DOM već postoji.
+
+  function enhanceFaq(section: HTMLElement) {
+    const list = section.querySelector<HTMLElement>('.demo-faq__list')
+    const items = [...section.querySelectorAll<HTMLDetailsElement>('.demo-faq__item')]
+    // Za jedno pitanje "otvori sve" nema smisla.
+    if (!list || items.length < 2) return
+
+    const groupName = items[0].getAttribute('name')
+    const labelOpen = section.dataset.labelOpen ?? 'Open all'
+    const labelClose = section.dataset.labelClose ?? 'Close all'
+
+    // Pravi <button>: fokus, Enter i Space dobijamo od browsera besplatno.
+    // type="button" da se nikad ne ponaša kao submit ako završi u formi.
+    const button = document.createElement('button')
+    button.type = 'button'
+    button.className = 'demo-faq__toggle-all'
+
+    const allOpen = () => items.every((item) => item.open)
+
+    // Jedan izvor istine: stanje dugmeta se uvek čita iz <details>
+    // elemenata, pa ostaje tačno i kad korisnik ručno otvara/zatvara pitanja.
+    function syncButton() {
+      const expanded = allOpen()
+      button.textContent = expanded ? labelClose : labelOpen
+      button.setAttribute('aria-expanded', String(expanded))
+    }
+
+    button.addEventListener('click', () => {
+      if (allOpen()) {
+        items.forEach((item) => (item.open = false))
+      } else {
+        // <details> sa istim name je ekskluzivan: browser zatvara ostale čim
+        // se jedan otvori. Da bi sve moglo da bude otvoreno, privremeno
+        // uklanjamo name; vraćamo ga kad se sve zatvori (vidi 'toggle').
+        items.forEach((item) => {
+          item.removeAttribute('name')
+          item.open = true
+        })
+      }
+      syncButton()
+    })
+
+    items.forEach((item) =>
+      item.addEventListener('toggle', () => {
+        // Kad je sve zatvoreno, vraćamo ekskluzivno ponašanje iz HTML-a.
+        if (groupName && items.every((i) => !i.open)) {
+          items.forEach((i) => i.setAttribute('name', groupName))
+        }
+        syncButton()
+      }),
+    )
+
+    syncButton()
+    list.before(button)
+  }
+
+  document.querySelectorAll<HTMLElement>('.demo-faq').forEach(enhanceFaq)
+</script>
 
 <style>
   .demo-faq {
@@ -30,6 +122,29 @@ const {data} = Astro.props as {data: FaqSection}
   .demo-faq__heading {
     font-size: var(--demo-text-xl);
     margin-bottom: var(--demo-space-8);
+  }
+
+  /* Dugme pravi JS, pa nema Astro-ov data-astro-cid atribut i obično
+     scoped pravilo ga ne bi pogodilo. :global() isključuje scope samo za
+     ovu klasu, a .demo-faq ispred drži pravilo vezano za komponentu. */
+  .demo-faq :global(.demo-faq__toggle-all) {
+    display: block;
+    margin-left: auto;
+    margin-bottom: var(--demo-space-2);
+    min-height: 44px;          /* minimalna veličina mete za dodir */
+    padding: var(--demo-space-2) var(--demo-space-4);
+    font: inherit;
+    font-weight: 600;
+    color: var(--demo-color-accent);
+    background: transparent;
+    border: 1px solid currentColor;
+    border-radius: var(--demo-radius);
+    cursor: pointer;
+    transition: background var(--demo-transition);
+  }
+
+  .demo-faq :global(.demo-faq__toggle-all:hover) {
+    background: var(--demo-color-surface);
   }
 
   .demo-faq__item {
